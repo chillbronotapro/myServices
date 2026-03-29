@@ -1,0 +1,3 @@
+[deploy]
+startCommand = "next start"
+preDeployCommand = "mysql -h $MYSQLHOST -P $MYSQLPORT -u $MYSQLUSER -p$MYSQLPASSWORD $MYSQL_DATABASE < schema.sql"
