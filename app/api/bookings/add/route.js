@@ -1,31 +1,39 @@
 import pool from '@/lib/db';
+import { createBookingSchema } from '@/app/types';
 
 export async function POST(request) {
   try {
-    const { serviceId, userId, date } = await request.json();
-
-    if (!serviceId || !userId || !date) {
+    const body = await request.json();
+    
+    // Validate input
+    const validationResult = createBookingSchema.safeParse(body);
+    if (!validationResult.success) {
       return Response.json(
-        { error: 'Missing required fields' },
+        { error: 'Validation failed', details: validationResult.error.errors },
         { status: 400 }
       );
     }
 
-    const connection = await pool.getConnection();
-    const result = await connection.execute(
-      'INSERT INTO bookings (service_id, user_id, date, status) VALUES (?, ?, ?, ?)',
-      [serviceId, userId, date, 'pending']
-    );
-    connection.release();
+    const { serviceId, userId, date } = validationResult.data;
 
-    return Response.json({
-      id: result[0].insertId,
-      serviceId,
-      userId,
-      date,
-      status: 'pending',
-      createdAt: new Date()
-    });
+    const connection = await pool.getConnection();
+    try {
+      const [result] = await connection.execute(
+        'INSERT INTO bookings (service_id, user_id, date, status) VALUES (?, ?, ?, ?)',
+        [serviceId, userId, date, 'pending']
+      );
+
+      return Response.json({
+        id: result.insertId,
+        serviceId,
+        userId,
+        date,
+        status: 'pending',
+        createdAt: new Date()
+      });
+    } finally {
+      connection.release();
+    }
   } catch (error) {
     console.error('Error adding booking:', error);
     return Response.json(
