@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "start": "next start"
   },
   "dependencies": {
     "firebase": "^12.10.0",
@@ -24,7 +23,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
+    "eslint-plugin-react": "^20.0.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
     "tailwindcss": "^4.2.1",
-    "typescript": "^5"
+    "typescript": "^5.0.0"
   }
 }
